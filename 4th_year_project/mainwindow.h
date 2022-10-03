@@ -6,9 +6,13 @@
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/videoio/registry.hpp>
 
 #include <iostream>
 #include <stdio.h>
+
+using namespace cv;
+using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,5 +28,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    bool test();
 };
 #endif // MAINWINDOW_H

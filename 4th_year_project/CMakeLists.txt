@@ -55,18 +55,10 @@ set_target_properties(4th_year_project PROPERTIES
 )
 
 #OPENCV_START
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(4th_year_project PRIVATE "/usr/local/include/opencv4")
-target_include_directories(4th_year_project PRIVATE "-L/usr/local/lib"
-    "lopencv_core"
-    "lopencv_highgui"
-    "lopencv_imgproc"
-    "lopencv_features2d"
-    "lopencv_xfeatures2d"
-    "lopencv_calib3d"
-    "lopencv_video"
-    "lopencv_videoio"
-    "lopencv_imgcodecs"
-    "lopencv_objdetect")
+target_link_libraries(4th_year_project PRIVATE ${OpenCV_LIBS})
 #OpenCV_END
 
 if(QT_VERSION_MAJOR EQUAL 6)
