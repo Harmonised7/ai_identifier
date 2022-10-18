@@ -3,14 +3,17 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QDebug>
+#include <QGraphicsScene>
 
-#include <opencv4/opencv2/core.hpp>
-#include <opencv4/opencv2/videoio.hpp>
-#include <opencv4/opencv2/highgui.hpp>
-#include <opencv4/opencv2/videoio/registry.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/videoio.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/videoio/registry.hpp>
 
 #include <iostream>
 #include <stdio.h>
+#include <util.h>
 
 //#define FRAME_PRINT
 #define CONNECTION_PRINT
@@ -32,6 +35,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void print(QString string);
+
 private:
     Ui::MainWindow *ui;
     int _framerate = 24;
@@ -47,9 +52,11 @@ private:
     int _apiRef = cv::CAP_V4L;
 
     VideoCapture _vCap;
-    Mat _frame;
+    Mat _frameMat;
+    QPixmap _framePixmap;
+    QGraphicsScene _frameScene;
 
-    bool printDebug();
+    bool test();
     void onFrame();
     void connectCamera();
 };

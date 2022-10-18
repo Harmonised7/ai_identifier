@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     _cameraConnectionManager.setInterval(1000);
     if(!_vCap.isOpened())
     {
-        qDebug() << "ERROR! Camera not found! Please connect the camera to continue.";
+        print("ERROR! Camera not found! Please connect the camera to continue.");
         _frameUpdater.stop();
         _cameraConnectionManager.start();
     }
@@ -29,7 +29,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::printDebug()
+void MainWindow::print(QString string)
+{
+    ui->outputTextBox->moveCursor(QTextCursor::End);
+    ui->outputTextBox->insertPlainText(string + "\n");
+    ui->outputTextBox->moveCursor(QTextCursor::End);
+    qDebug() << string;
+}
+
+bool MainWindow::test()
 {
 //    vector<VideoCaptureAPIs> cameraApis = videoio_registry::getBackends();
 //    for(vector<VideoCaptureAPIs>::iterator iter = cameraApis.begin()+1 ; iter != cameraApis.end(); ++iter)
@@ -58,11 +66,11 @@ void MainWindow::onFrame()
     #endif
 
     // wait for a new frame from camera and store it into 'frame'
-    _vCap.read(_frame);
+    _vCap.read(_frameMat);
     // check if we succeeded
-    if (_frame.empty())
+    if (_frameMat.empty())
     {
-        qDebug() << "ERROR! Camera disconnected";
+        print("ERROR! Camera disconnected");
         _frameUpdater.stop();
         destroyWindow(_cameraWindowName);
 
@@ -73,28 +81,34 @@ void MainWindow::onFrame()
         return;
     }
     // show live and wait for a key with timeout long enough to show images
-    imshow(_cameraWindowName, _frame);
+//    imshow(_cameraWindowName, _frameMat);
+//    _frameMat = Mat(404, 404, CV_8UC4);
+    _framePixmap = Util::matToPixmap(_frameMat);
+    _frameScene.addPixmap(_framePixmap);
+    ui->pixmapOutput->setScene(&_frameScene);
+    ui->pixmapOutput->update();
+    ui->pixmapOutput->show();
 }
 
 void MainWindow::connectCamera()
 {
     #ifdef CONNECTION_PRINT
-    qDebug() << "INFO: Attempting connection..." << _vCap.isOpened();
+    print("INFO: Attempting connection... "/* + QString((_vCap.isOpened() ? "open" : "closed"))*/);
     #endif
     if(!_vCap.isOpened())
     {
         _vCap.open(_cameraPath, _apiRef);
         if(_vCap.isOpened())
         {
-            qDebug() << "INFO: Camera connected";
+            print("INFO: Camera connected");
             _frameUpdater.start();
 
             #ifdef CONNECTION_MANAGER
             _cameraConnectionManager.stop();
             #endif
         }
-//        else
-//            _frameUpdater.stop();
+        else
+            _frameUpdater.stop();
     }
 }
 
