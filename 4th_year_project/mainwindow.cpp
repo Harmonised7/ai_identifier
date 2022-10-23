@@ -11,6 +11,11 @@ MainWindow::MainWindow(QWidget *parent)
     _frameUpdater.setInterval(_intervalMs);
     #ifdef CONNECTION_MANAGER
     _cameraConnectionManager.setInterval(1000);
+    _vCap.set(cv::CAP_PROP_FRAME_WIDTH, 1080);
+    _vCap.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
+
+    ui->outputGraphicView->size().expandedTo(QSize(1080, 1080));
+
     if(!_vCap.isOpened())
     {
         print("ERROR! Camera not found! Please connect the camera to continue.");
@@ -85,9 +90,9 @@ void MainWindow::onFrame()
 //    _frameMat = Mat(404, 404, CV_8UC4);
     _framePixmap = Util::matToPixmap(_frameMat);
     _frameScene.addPixmap(_framePixmap);
-    ui->pixmapOutput->setScene(&_frameScene);
-    ui->pixmapOutput->update();
-    ui->pixmapOutput->show();
+    ui->outputGraphicView->setScene(&_frameScene);
+    ui->outputGraphicView->update();
+    ui->outputGraphicView->show();
 }
 
 void MainWindow::connectCamera()
