@@ -21,7 +21,7 @@ set(PROJECT_SOURCES
         mainwindow.ui
 
         util.h
-
+        config.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

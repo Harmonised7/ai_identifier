@@ -7,26 +7,25 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connectCamera();
+    _connectCamera();
     _frameUpdater.setInterval(_intervalMs);
     #ifdef CONNECTION_MANAGER
     _cameraConnectionManager.setInterval(1000);
-    _vCap.set(cv::CAP_PROP_FRAME_WIDTH, 1080);
-    _vCap.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
 
-    ui->outputGraphicView->size().expandedTo(QSize(1080, 1080));
-
+    QGraphicsView outputGraphicsView = ui->outputGraphicView;
+    outputGraphicsView.setMinimumSize(CAMERA_WIDTH, CAMERA_WIDTH);
+    outputGraphicsView.setMaximumSize(CAMERA_WIDTH, CAMERA_WIDTH);
     if(!_vCap.isOpened())
     {
         print("ERROR! Camera not found! Please connect the camera to continue.");
         _frameUpdater.stop();
         _cameraConnectionManager.start();
     }
-    QObject::connect(&_cameraConnectionManager, &QTimer::timeout, this, &MainWindow::connectCamera);
+    QObject::connect(&_cameraConnectionManager, &QTimer::timeout, this, &MainWindow::_connectCamera);
     #endif
 
     _frameUpdater.start();
-    QObject::connect(&_frameUpdater, &QTimer::timeout, this, &MainWindow::onFrame);
+    QObject::connect(&_frameUpdater, &QTimer::timeout, this, &MainWindow::_onFrame);
 }
 
 MainWindow::~MainWindow()
@@ -42,7 +41,7 @@ void MainWindow::print(QString string)
     qDebug() << string;
 }
 
-bool MainWindow::test()
+bool MainWindow::_test()
 {
 //    vector<VideoCaptureAPIs> cameraApis = videoio_registry::getBackends();
 //    for(vector<VideoCaptureAPIs>::iterator iter = cameraApis.begin()+1 ; iter != cameraApis.end(); ++iter)
@@ -63,7 +62,7 @@ bool MainWindow::test()
     return 0;
 }
 
-void MainWindow::onFrame()
+void MainWindow::_onFrame()
 {
     ++_frameCount;
     #ifdef FRAME_PRINT
@@ -88,6 +87,9 @@ void MainWindow::onFrame()
     // show live and wait for a key with timeout long enough to show images
 //    imshow(_cameraWindowName, _frameMat);
 //    _frameMat = Mat(404, 404, CV_8UC4);
+    int gap = (CAMERA_WIDTH - CAMERA_HEIGHT)/2;
+    Rect cropRect = Rect(gap, 0, CAMERA_HEIGHT, CAMERA_HEIGHT);
+    _frameMat = _frameMat(cropRect);
     _framePixmap = Util::matToPixmap(_frameMat);
     _frameScene.addPixmap(_framePixmap);
     ui->outputGraphicView->setScene(&_frameScene);
@@ -95,7 +97,7 @@ void MainWindow::onFrame()
     ui->outputGraphicView->show();
 }
 
-void MainWindow::connectCamera()
+void MainWindow::_connectCamera()
 {
     #ifdef CONNECTION_PRINT
     print("INFO: Attempting connection... "/* + QString((_vCap.isOpened() ? "open" : "closed"))*/);
@@ -105,6 +107,7 @@ void MainWindow::connectCamera()
         _vCap.open(_cameraPath, _apiRef);
         if(_vCap.isOpened())
         {
+            _initCamera();
             print("INFO: Camera connected");
             _frameUpdater.start();
 
@@ -118,3 +121,8 @@ void MainWindow::connectCamera()
 }
 
 
+void MainWindow::_initCamera()
+{
+    _vCap.set(cv::CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT);
+    _vCap.set(cv::CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH);
+}

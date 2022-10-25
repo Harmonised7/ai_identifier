@@ -28,6 +28,8 @@
 #include <opencv4/opencv2/highgui.hpp>
 #include <opencv4/opencv2/videoio/registry.hpp>
 
+#include "config.h"
+
 using namespace cv;
 
 class Util

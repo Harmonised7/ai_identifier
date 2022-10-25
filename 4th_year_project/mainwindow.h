@@ -56,8 +56,9 @@ private:
     QPixmap _framePixmap;
     QGraphicsScene _frameScene;
 
-    bool test();
-    void onFrame();
-    void connectCamera();
+    bool _test();
+    void _onFrame();
+    void _connectCamera();
+    void _initCamera();
 };
 #endif // MAINWINDOW_H
