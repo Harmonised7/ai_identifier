@@ -12,9 +12,12 @@ MainWindow::MainWindow(QWidget *parent)
     #ifdef CONNECTION_MANAGER
     _cameraConnectionManager.setInterval(1000);
 
-    QGraphicsView outputGraphicsView = ui->outputGraphicView;
-    outputGraphicsView.setMinimumSize(CAMERA_WIDTH, CAMERA_WIDTH);
-    outputGraphicsView.setMaximumSize(CAMERA_WIDTH, CAMERA_WIDTH);
+    _outputGraphicsView = QSharedPointer<QGraphicsView>(ui->outputGraphicView);
+//    _outputGraphicsView->setMinimumSize(CAMERA_WIDTH, CAMERA_WIDTH);
+//    _outputGraphicsView->setMaximumSize(CAMERA_WIDTH, CAMERA_WIDTH);
+    _outputGraphicsView->setFrameShape(QFrame::NoFrame);
+    _outputGraphicsView->setRenderHints(QPainter::Antialiasing | QPainter::LosslessImageRendering | QPainter::TextAntialiasing);
+
     if(!_vCap.isOpened())
     {
         print("ERROR! Camera not found! Please connect the camera to continue.");
@@ -87,20 +90,25 @@ void MainWindow::_onFrame()
     // show live and wait for a key with timeout long enough to show images
 //    imshow(_cameraWindowName, _frameMat);
 //    _frameMat = Mat(404, 404, CV_8UC4);
-    const double scale = 1 - (ui->zoomSlider->value()/8192.0);
+    const double scale = 1 - (ui->zoomSlider->value()/SLIDER_RANGE);
 
     //Crop to 1:1
     _frameMat = Util::cropTo1By1Mid(_frameMat);
+    const int matSize = _frameMat.cols;
+//    //Crop to outputGraphicView size
+//    cv::resize(_frameMat, _frameMat, Size(), outputGraphicView->width(), outputGraphicView->height(), INTER_CUBIC);
     //Shrink to zoom slider value
-    _frameMat = Util::cropShrink(_frameMat, scale);
+    const double horizontalWidthPos = ui->horizontalZoomPosSlider->value()/SLIDER_RANGE;
+    const double verticalWidthPos = 1.0-(ui->verticalZoomPosSlider->value()/SLIDER_RANGE);
+    _frameMat = Util::cropShrink(_frameMat, scale, horizontalWidthPos, verticalWidthPos);
 
     _framePixmap = Util::matToPixmap(_frameMat);
     _frameScene.addPixmap(_framePixmap);
 
-    QGraphicsView *outputGraphicView = ui->outputGraphicView;
-    outputGraphicView->setScene(&_frameScene);
-    outputGraphicView->update();
-    outputGraphicView->show();
+    _outputGraphicsView->fitInView(0, 0, matSize, matSize, Qt::KeepAspectRatio);
+    _outputGraphicsView->setScene(&_frameScene);
+    _outputGraphicsView->update();
+    _outputGraphicsView->show();
 }
 
 void MainWindow::_connectCamera()
@@ -132,3 +140,10 @@ void MainWindow::_initCamera()
     _vCap.set(cv::CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT);
     _vCap.set(cv::CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH);
 }
+
+void MainWindow::on_centerZoomButton_clicked()
+{
+    ui->horizontalZoomPosSlider->setValue(SLIDER_RANGE*0.5);
+    ui->verticalZoomPosSlider->setValue(SLIDER_RANGE*0.5);
+}
+

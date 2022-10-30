@@ -37,6 +37,9 @@ public:
 
     void print(QString string);
 
+private slots:
+    void on_centerZoomButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     int _framerate = 24;
@@ -55,6 +58,7 @@ private:
     Mat _frameMat;
     QPixmap _framePixmap;
     QGraphicsScene _frameScene;
+    QSharedPointer<QGraphicsView> _outputGraphicsView;
 
     bool _test();
     void _onFrame();
