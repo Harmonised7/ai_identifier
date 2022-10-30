@@ -248,6 +248,11 @@ public:
             resize(mat, mat, Size(), 1/scaleRatio, 1/scaleRatio, INTER_CUBIC);
         return mat;
     }
+
+    static QString getFormattedDate()
+    {
+        return QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
+    }
 };
 
 #endif // UTIL_H

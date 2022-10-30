@@ -152,8 +152,20 @@
      <height>19</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>Image</string>
+    </property>
+    <addaction name="actionExport_Image"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExport_Image">
+   <property name="text">
+    <string>Quick Export</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
