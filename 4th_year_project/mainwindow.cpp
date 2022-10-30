@@ -162,15 +162,22 @@ void MainWindow::on_centerZoomButton_clicked()
     ui->verticalZoomPosSlider->setValue(SLIDER_RANGE*0.5);
 }
 
+void MainWindow::exportImage(QString name, bool verbose)
+{
+    if(name.length() == 0)
+        name = Util::getFormattedDate() + ".png";
+    imwrite(name.toStdString(), _frameMat);
+    if(verbose)
+        print(name + " exported");
+}
 
 void MainWindow::on_actionExport_Image_triggered()
 {
     exportImage();
 }
 
-void MainWindow::exportImage(QString name)
+void MainWindow::on_exportButton_clicked()
 {
-    if(name.length() == 0)
-        name = Util::getFormattedDate() + ".png";
-    imwrite(name.toStdString(), _frameMat);
+    exportImage();
 }
+

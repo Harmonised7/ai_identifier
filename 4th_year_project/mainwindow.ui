@@ -41,7 +41,7 @@
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalPosResetLayout">
       <item>
        <widget class="QSlider" name="verticalZoomPosSlider">
         <property name="maximum">
@@ -83,7 +83,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="outputHorizontalPosLayout">
       <item>
        <widget class="QGraphicsView" name="outputGraphicView">
         <property name="sizePolicy">
@@ -128,7 +128,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QVBoxLayout" name="panelLayout">
       <item>
        <widget class="QTextEdit" name="outputTextBox">
         <property name="sizePolicy">
@@ -139,7 +139,17 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="exportButton">
+        <property name="text">
+         <string>Export</string>
+        </property>
+       </widget>
+      </item>
      </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout"/>
     </item>
    </layout>
   </widget>

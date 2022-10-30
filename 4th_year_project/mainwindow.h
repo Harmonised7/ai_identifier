@@ -37,12 +37,14 @@ public:
     ~MainWindow();
 
     void print(QString string);
-    void exportImage(QString name = "");
+    void exportImage(QString name = "", bool verbose = true);
     QString getFormattedDate();
 
 private slots:
     void on_centerZoomButton_clicked();
     void on_actionExport_Image_triggered();
+
+    void on_exportButton_clicked();
 
 private:
     Ui::MainWindow *ui;
