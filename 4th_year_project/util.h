@@ -215,6 +215,39 @@ public:
     {
         return QPoint(p.x() + moveX, p.y() + moveY);
     }
+
+    static Mat cropTo1By1Mid(Mat mat)
+    {
+        const int width = mat.cols, height = mat.rows;
+        if(height < width)
+        {
+            const int gap = (width - height)/2;
+            const Rect cropRect = Rect(gap, 0, height, height);
+            return mat(cropRect);
+        }
+        else
+        {
+            const int gap = (height - width)/2;
+            const Rect cropRect = Rect(gap, 0, width, width);
+            return mat(cropRect);
+        }
+        return mat;
+    }
+
+    static Mat cropShrink(Mat mat, double scaleRatio, double xPosRatio = 0.5, double yPosRatio = 0.5, bool keepResolution = true)
+    {
+        scaleRatio = cap(scaleRatio, 0.1, 1);
+        xPosRatio = cap(xPosRatio, 0.1, 1);
+        yPosRatio = cap(yPosRatio, 0.1, 1);
+        const int height = mat.rows, width = mat.cols;
+        const int goalWidth = width*scaleRatio, goalHeight = height*scaleRatio;
+        const int widthGap = (width-goalWidth), heightGap = (height-goalHeight);
+        const Rect cropRect = Rect(widthGap * xPosRatio, heightGap * yPosRatio, goalWidth, goalHeight);
+        mat = mat(cropRect);
+        if(keepResolution)
+            resize(mat, mat, Size(), 1/scaleRatio, 1/scaleRatio, INTER_CUBIC);
+        return mat;
+    }
 };
 
 #endif // UTIL_H

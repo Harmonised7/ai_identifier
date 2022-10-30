@@ -87,14 +87,20 @@ void MainWindow::_onFrame()
     // show live and wait for a key with timeout long enough to show images
 //    imshow(_cameraWindowName, _frameMat);
 //    _frameMat = Mat(404, 404, CV_8UC4);
-    int gap = (CAMERA_WIDTH - CAMERA_HEIGHT)/2;
-    Rect cropRect = Rect(gap, 0, CAMERA_HEIGHT, CAMERA_HEIGHT);
-    _frameMat = _frameMat(cropRect);
+    const double scale = 1 - (ui->zoomSlider->value()/8192.0);
+
+    //Crop to 1:1
+    _frameMat = Util::cropTo1By1Mid(_frameMat);
+    //Shrink to zoom slider value
+    _frameMat = Util::cropShrink(_frameMat, scale);
+
     _framePixmap = Util::matToPixmap(_frameMat);
     _frameScene.addPixmap(_framePixmap);
-    ui->outputGraphicView->setScene(&_frameScene);
-    ui->outputGraphicView->update();
-    ui->outputGraphicView->show();
+
+    QGraphicsView *outputGraphicView = ui->outputGraphicView;
+    outputGraphicView->setScene(&_frameScene);
+    outputGraphicView->update();
+    outputGraphicView->show();
 }
 
 void MainWindow::_connectCamera()
