@@ -147,6 +147,7 @@ void MainWindow::_initCamera()
 {
     _vCap.set(cv::CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT);
     _vCap.set(cv::CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH);
+    _vCap.set(cv::CAP_PROP_FPS, 24);
 }
 
 void MainWindow::_printFramerate()
