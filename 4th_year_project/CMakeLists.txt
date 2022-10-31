@@ -16,12 +16,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        mainwindow.h mainwindow.cpp mainwindow.ui
 
         util.h
         config.h
+
+        inference.h inference.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

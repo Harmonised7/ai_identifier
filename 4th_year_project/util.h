@@ -35,37 +35,37 @@ using namespace cv;
 class Util
 {
 public:
-    static bool writeToFile(QJsonArray json, QString outputPath)
+    static bool writeToFile(const QJsonArray &json, const QString &outputPath)
     {
         return writeToFile(toByteArray(json), outputPath);
     }
 
-    static bool writeToFile(QJsonObject json, QString outputPath)
+    static bool writeToFile(const QJsonObject &json, const QString &outputPath)
     {
         return writeToFile(toByteArray(json), outputPath);
     }
 
-    static bool writeToFile(QJsonDocument json, QString outputPath)
+    static bool writeToFile(const QJsonDocument &json, const QString &outputPath)
     {
         return writeToFile(toByteArray(json), outputPath);
     }
 
-    static QByteArray toByteArray(QJsonArray json)
+    static QByteArray toByteArray(const QJsonArray &json)
     {
         return toByteArray(QJsonDocument(json));
     }
 
-    static QByteArray toByteArray(QJsonObject json)
+    static QByteArray toByteArray(const QJsonObject &json)
     {
         return toByteArray(QJsonDocument(json));
     }
 
-    static QByteArray toByteArray(QJsonDocument json)
+    static QByteArray toByteArray(const QJsonDocument &json)
     {
         return json.toJson(QJsonDocument::Compact);
     }
 
-    static bool writeToFile(QByteArray byteArray, QString outputPath)
+    static bool writeToFile(const QByteArray &byteArray, const QString &outputPath)
     {
         QFile output(outputPath);
         if(output.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -79,7 +79,7 @@ public:
         return false;
     }
 
-    static QJsonDocument parseJson(QFile file)
+    static QJsonDocument parseJson(QFile &file)
     {
         if(file.exists())
         {
@@ -93,7 +93,7 @@ public:
         return QJsonDocument();
     }
 
-    static QPoint getMidPoint(QPoint p1, QPoint p2)
+    static QPoint getMidPoint(const QPoint &p1, const QPoint &p2)
     {
         return QPoint((p1.x() + p2.x()) / 2, (p1.y() + p2.y()) / 2);
     }
@@ -146,7 +146,7 @@ public:
         return qSqrt(qPow(p2.x() - p1.x(), 2) + qPow(p2.y() - p1.y(), 2));
     }
 
-    static int genRand(int min, int max = 0)
+    static int genRand(const int &min, const int &max = 0)
     {
         if(min == max)
             return min;
@@ -156,7 +156,7 @@ public:
             return QRandomGenerator::global()->bounded(max, min + 1);
     }
 
-    static double genRandDouble(double min, double max = 0)
+    static double genRandDouble(const double &min, const double &max = 0)
     {
         if(min == max)
             return min;
@@ -166,57 +166,57 @@ public:
             return max + QRandomGenerator::global()->bounded(min - max);
     }
 
-    static QPoint genRandQPoint(cv::Rect area)
+    static QPoint genRandQPoint(const cv::Rect &area)
     {
         return genRandQPoint(QPoint(area.tl().x, area.tl().y), QPoint(area.br().x, area.br().y));
     }
 
-    static Point genRandPoint(cv::Rect area)
+    static Point genRandPoint(const cv::Rect &area)
     {
         return genRandPoint(Point(area.tl().x, area.tl().y), Point(area.br().x, area.br().y));
     }
 
-    static QPoint genRandQPoint(cv::Mat mat)
+    static QPoint genRandQPoint(const cv::Mat &mat)
     {
         return genRandQPoint(QPoint(0, 0), QPoint(mat.cols, mat.rows));
     }
 
-    static Point genRandPoint(cv::Mat mat)
+    static Point genRandPoint(const cv::Mat &mat)
     {
         return genRandPoint(Point(0, 0), Point(mat.cols, mat.rows));
     }
 
-    static QPoint genRandQPoint(QPoint p1, QPoint p2)
+    static QPoint genRandQPoint(const QPoint &p1, const QPoint &p2)
     {
         return QPoint(p1.x() + genRand(p2.x() - p1.x()), p1.y() + genRand(p2.y() - p1.y()));
     }
 
-    static Point genRandPoint(Point p1, Point p2)
+    static Point genRandPoint(const Point &p1, const Point &p2)
     {
         return Point(p1.x + genRand(p2.x - p1.x), p1.y + genRand(p2.y - p1.y));
     }
 
-    static QPoint genRandQPointOffset(QPoint p, int offset)
+    static QPoint genRandQPointOffset(const QPoint &p, const int &offset)
     {
         return QPoint(p.x() + genRand(-offset, offset), p.y() + genRand(-offset, offset));
     }
 
-    static Point genRandPointOffset(Point p, int offset)
+    static Point genRandPointOffset(const Point &p, const int &offset)
     {
         return Point(p.x + genRand(-offset, offset), p.y + genRand(-offset, offset));
     }
 
-    static Point movePoint(Point p, int moveX, int moveY)
+    static Point movePoint(const Point &p, const int &moveX, const int &moveY)
     {
         return Point(p.x + moveX, p.y + moveY);
     }
 
-    static QPoint moveQPoint(QPoint p, int moveX, int moveY)
+    static QPoint moveQPoint(const QPoint &p, const int &moveX, const int &moveY)
     {
         return QPoint(p.x() + moveX, p.y() + moveY);
     }
 
-    static Mat cropTo1By1Mid(Mat mat)
+    static Mat cropTo1By1Mid(const Mat &mat)
     {
         const int width = mat.cols, height = mat.rows;
         if(height < width)
@@ -234,7 +234,7 @@ public:
         return mat;
     }
 
-    static Mat cropShrink(Mat mat, double scaleRatio, double xPosRatio = 0.5, double yPosRatio = 0.5, bool keepResolution = true)
+    static Mat cropShrink(Mat &mat, double scaleRatio, double xPosRatio = 0.5, double yPosRatio = 0.5, const bool &keepResolution = true)
     {
         scaleRatio = cap(scaleRatio, 0.1, 1);
         xPosRatio = cap(xPosRatio, 0.1, 1);
