@@ -21,6 +21,10 @@
 #include <qmath.h>
 #include <QRandomGenerator>
 #include <QDateTime>
+#include <QTextEdit>
+
+#include<array>
+#include<functional>
 
 #include <opencv4/opencv2/core.hpp>
 #include <opencv4/opencv2/imgproc.hpp>
@@ -236,7 +240,7 @@ public:
 
     static Mat cropShrink(Mat &mat, double scaleRatio, double xPosRatio = 0.5, double yPosRatio = 0.5, const bool &keepResolution = true)
     {
-        scaleRatio = cap(scaleRatio, 0.1, 1);
+        scaleRatio = cap(scaleRatio, 0.01, 1);
         xPosRatio = cap(xPosRatio, 0.1, 1);
         yPosRatio = cap(yPosRatio, 0.1, 1);
         const int height = mat.rows, width = mat.cols;
@@ -252,6 +256,44 @@ public:
     static QString getFormattedDate()
     {
         return QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
+    }
+
+    static void appendQTextEditLine(QTextEdit *textEdit, const QString &text)
+    {
+        textEdit->moveCursor(QTextCursor::End);
+        textEdit->insertPlainText(text + "\n");
+        textEdit->moveCursor(QTextCursor::End);
+    }
+
+    template<typename KEY, typename VAL>
+    static VAL getOrDefault(QMap<KEY, VAL> *map, const KEY key, VAL defaultValue)
+    {
+        if(map->contains(key))
+            return map->value(key);
+        return defaultValue;
+    }
+
+    template<typename KEY, typename VAL>
+    static VAL computeIfAbsent(QMap<KEY, VAL> *map, const KEY key, std::function<VAL(void)> getter)
+    {
+        if(!map->contains(key))
+            map->insert(getter());
+        return map->value(key);
+    }
+
+    template<typename KEY>
+    static int increment(QMap<KEY, int> *map, const KEY key)
+    {
+        const int value = map->contains(key) ?
+                          map->value(key) + 1 :
+                          1;
+        map->insert(key, value);
+        return map->value(key);
+    }
+
+    static QRect rectToQRect(cv::Rect rect)
+    {
+        return QRect(rect.x, rect.y, rect.width, rect.height);
     }
 };
 

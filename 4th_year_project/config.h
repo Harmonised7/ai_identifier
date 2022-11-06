@@ -4,6 +4,8 @@
 #define CAMERA_WIDTH 1920
 #define CAMERA_HEIGHT 1080
 
+#define INFERENCE_SIZE 768
+
 #define SLIDER_RANGE 10000.0
 
 #endif // CONFIG_H

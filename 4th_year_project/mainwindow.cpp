@@ -43,12 +43,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::print(QString string)
+void MainWindow::print(const QString &text)
 {
-    ui->outputTextBox->moveCursor(QTextCursor::End);
-    ui->outputTextBox->insertPlainText(string + "\n");
-    ui->outputTextBox->moveCursor(QTextCursor::End);
-    qDebug() << string;
+    Util::appendQTextEditLine(ui->consoleTextBox, text);
+    qDebug() << text;
+}
+
+void MainWindow::_appendInfoBox(const QString &text)
+{
+    Util::appendQTextEditLine(ui->infoTextBox, text);
 }
 
 bool MainWindow::_test()
@@ -74,13 +77,6 @@ bool MainWindow::_test()
 
 void MainWindow::_onFrame()
 {
-    ++_frameCountTotal;
-    ++_frameCount;
-    #ifdef FRAME_PRINT
-    if(_frameCountTotal % 10 == 0)
-        qDebug() << "INFO: Retrieving frame..." << _frameCountTotal;
-    #endif
-
     // wait for a new frame from camera and store it into 'frame'
     _vCap.read(_frameMat);
     // check if we succeeded
@@ -97,8 +93,21 @@ void MainWindow::_onFrame()
         return;
     }
 
-    //Crop to 1:1
+    //FPS Count
+    ++_frameCountTotal;
+    ++_frameCount;
+
+    #ifdef FRAME_PRINT
+    if(_frameCountTotal % 10 == 0)
+        qDebug() << "INFO: Retrieving frame..." << _frameCountTotal;
+    #endif
+
+    //Clear info box
+    ui->infoTextBox->clear();
+
+    //Run Inference
     _frameMat = Util::cropTo1By1Mid(_frameMat);
+    _runInference(_frameMat);
     const int matSize = _frameMat.cols;
 
     //Crop to specified zoom/pos values
@@ -110,6 +119,13 @@ void MainWindow::_onFrame()
     //Convert to Pixmap
     _framePixmap = Util::matToPixmap(_frameMat);
     _frameScene.addPixmap(_framePixmap);
+
+    //Add detections to the Scene
+    const int detectionCount = _detections.length();
+    for(int i = 0; i < detectionCount; ++i)
+    {
+        _frameScene.addItem(new DetectionGraphic(_detections[i]));
+    }
 
     //Set output
     _outputGraphicsView->fitInView(0, 0, matSize, matSize, Qt::KeepAspectRatio);
@@ -157,13 +173,41 @@ void MainWindow::_printFramerate()
     _frameCount = 0;
 }
 
+void MainWindow::_runInference(const Mat &inputMat)
+{
+    _detectionCountMap->clear();
+    _detections = _inf.runInference(inputMat);
+
+    const int detectionsCount = _detections.size();
+    qDebug() << "Detection count:" << detectionsCount;
+
+    for (int i = 0; i < detectionsCount; ++i)
+    {
+        const Detection detection = _detections[i];
+        const QString className = detection.className;
+        Util::increment(_detectionCountMap, className);
+    }
+
+    for(const QString &key : _detectionCountMap->keys())
+    {
+        _appendInfoBox(key + " " + QString::number(_detectionCountMap->value(key)));
+    }
+
+    _appendInfoBox();
+
+    for(const Detection &detection : _detections)
+    {
+        _appendInfoBox(QString::number(detection.confidence).mid(0, 4));
+    }
+}
+
 void MainWindow::on_centerZoomButton_clicked()
 {
     ui->horizontalZoomPosSlider->setValue(SLIDER_RANGE*0.5);
     ui->verticalZoomPosSlider->setValue(SLIDER_RANGE*0.5);
 }
 
-void MainWindow::exportImage(QString name, bool verbose)
+void MainWindow::exportImage(QString name, const bool &verbose)
 {
     if(name.length() == 0)
         name = Util::getFormattedDate() + ".png";
@@ -180,5 +224,17 @@ void MainWindow::on_actionExport_Image_triggered()
 void MainWindow::on_exportButton_clicked()
 {
     exportImage();
+}
+
+
+void MainWindow::on_actionViewText_triggered(bool checked)
+{
+    _drawText = checked;
+}
+
+
+void MainWindow::on_actionViewOutline_triggered(bool checked)
+{
+    _drawOutline = checked;
 }
 

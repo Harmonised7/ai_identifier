@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
         config.h
 
         inference.h inference.cpp
+
+        detectiongraphic.h detectiongraphic.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
