@@ -241,8 +241,8 @@ public:
     static Mat cropShrink(Mat &mat, double scaleRatio, double xPosRatio = 0.5, double yPosRatio = 0.5, const bool &keepResolution = true)
     {
         scaleRatio = cap(scaleRatio, 0.01, 1);
-        xPosRatio = cap(xPosRatio, 0.1, 1);
-        yPosRatio = cap(yPosRatio, 0.1, 1);
+        xPosRatio = cap(xPosRatio, 0, 1);
+        yPosRatio = cap(yPosRatio, 0, 1);
         const int height = mat.rows, width = mat.cols;
         const int goalWidth = width*scaleRatio, goalHeight = height*scaleRatio;
         const int widthGap = (width-goalWidth), heightGap = (height-goalHeight);

@@ -18,10 +18,10 @@
 #include <inference.h>
 #include <detectiongraphic.h>
 
-#define FRAME_PRINT
+//#define FRAME_PRINT
 #define FRAME_PRINT_EVERY_MS 5000
-#define CONNECTION_PRINT
 
+#define CONNECTION_PRINT
 #define CONNECTION_MANAGER
 
 using namespace cv;
@@ -53,6 +53,8 @@ private slots:
 
     void on_actionViewOutline_triggered(bool checked);
 
+    void on_actionViewInference_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
 //    int _framerate = 12;
@@ -79,14 +81,14 @@ private:
     QGraphicsScene _frameScene;
     QSharedPointer<QGraphicsView> _outputGraphicsView;
     QMap<QString, int> *_detectionCountMap = new QMap<QString, int>;
-    QList<Detection> _detections/* = new QList<Detection>*/;
+    QList<Detection> _detections;
 
 //    QMap<QString, QList<Detection>> *_detectionClassMap = new QMap<QString, QList<Detection>>;
 
     Inference _inf = Inference("/media/2TB_Crucial_SSD/misc/AI/project/models/first_batch/violet.onnx", cv::Size(INFERENCE_SIZE, INFERENCE_SIZE),
                                "/media/2TB_Crucial_SSD/misc/AI/project/models/first_batch/classes.txt", true);
 
-    bool _drawText = true, _drawOutline = true;
+    bool _inferenceEnabled = true, _drawText = true, _drawOutline = true;
 
     //Methods
     bool _test();

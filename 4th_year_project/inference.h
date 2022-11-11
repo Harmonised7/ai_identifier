@@ -46,7 +46,7 @@ private:
 
     cv::Size2f modelShape{};
 
-    float modelConfidenseThreshold  {0.8};
+    float modelConfidenseThreshold  {0.7};
     float modelScoreThreshold       {0.2};
     float modelNMSThreshold         {0.4};
 

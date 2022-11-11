@@ -21,7 +21,10 @@ Inference::Inference(const QString &onnxModelPath, const cv::Size2f &modelInputS
 QList<Detection> Inference::runInference(const cv::Mat &input)
 {
     cv::Mat blob;
-    cv::Mat inputImage = Util::cropTo1By1Mid(input);
+    //Crop to 1:1 if not 1:1
+    cv::Mat inputImage = input.rows == input.cols
+            ? input :
+              Util::cropTo1By1Mid(input);
 
     cv::dnn::blobFromImage(inputImage, blob, 1.0/255.0, modelShape, cv::Scalar(), true, false);
     net.setInput(blob);

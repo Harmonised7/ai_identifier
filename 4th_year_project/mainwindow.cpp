@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
     _frameUpdater.start();
     #ifdef FRAME_PRINT
     _frameCountPrinter.setInterval(FRAME_PRINT_EVERY_MS);
-    _frameCountPrinter.start();
     QObject::connect(&_frameCountPrinter, &QTimer::timeout, this, &MainWindow::_printFramerate);
     #endif
     #ifdef CONNECTION_MANAGER
@@ -29,7 +28,13 @@ MainWindow::MainWindow(QWidget *parent)
     {
         print("ERROR! Camera not found! Please connect the camera to continue.");
         _frameUpdater.stop();
+
+        #ifdef FRAME_PRINT
+        _frameCountPrinter.stop();
+        #endif
+
         _cameraConnectionManager.start();
+
     }
     QObject::connect(&_cameraConnectionManager, &QTimer::timeout, this, &MainWindow::_connectCamera);
     #endif
@@ -93,6 +98,9 @@ void MainWindow::_onFrame()
         return;
     }
 
+    _detections.clear();
+    _frameMat = Util::cropTo1By1Mid(_frameMat);
+
     //FPS Count
     ++_frameCountTotal;
     ++_frameCount;
@@ -105,9 +113,13 @@ void MainWindow::_onFrame()
     //Clear info box
     ui->infoTextBox->clear();
 
-    //Run Inference
-    _frameMat = Util::cropTo1By1Mid(_frameMat);
-    _runInference(_frameMat);
+    if(_inferenceEnabled)
+    {
+        //Run Inference
+        _frameMat = Util::cropTo1By1Mid(_frameMat);
+        _runInference(_frameMat);
+    }
+
     const int matSize = _frameMat.cols;
 
     //Crop to specified zoom/pos values
@@ -148,6 +160,11 @@ void MainWindow::_connectCamera()
             _initCamera();
             print("INFO: Camera connected");
             _frameUpdater.start();
+
+            #ifdef FRAME_PRINT
+            _frameCountPrinter.start();
+            _frameCount = 0;
+            #endif
 
             #ifdef CONNECTION_MANAGER
             _cameraConnectionManager.stop();
@@ -211,7 +228,17 @@ void MainWindow::exportImage(QString name, const bool &verbose)
 {
     if(name.length() == 0)
         name = Util::getFormattedDate() + ".png";
-    imwrite(name.toStdString(), _frameMat);
+
+    //Export the scene as an image
+    QImage image(_frameScene.width(), _frameScene.height(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
+    _frameScene.render(&painter);
+
+    //Save image
+    image.save(name);
+
+//    imwrite(name.toStdString(), _frameMat);
     if(verbose)
         print(name + " exported");
 }
@@ -226,6 +253,10 @@ void MainWindow::on_exportButton_clicked()
     exportImage();
 }
 
+void MainWindow::on_actionViewInference_triggered(bool checked)
+{
+    _inferenceEnabled = checked;
+}
 
 void MainWindow::on_actionViewText_triggered(bool checked)
 {
