@@ -8,9 +8,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     _connectCamera();
-//    _frameUpdater.setInterval(_intervalMs);
-    _frameUpdater.setSingleShot(true);
-    _frameUpdater.start();
+    _frameUpdater.setInterval(_frameIntervalMs);
+    qDebug() << _frameIntervalMs;
+//    _frameUpdater.setSingleShot(true);
     #ifdef FRAME_PRINT
     _frameCountPrinter.setInterval(FRAME_PRINT_EVERY_MS);
     QObject::connect(&_frameCountPrinter, &QTimer::timeout, this, &MainWindow::_printFramerate);
@@ -39,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(&_cameraConnectionManager, &QTimer::timeout, this, &MainWindow::_connectCamera);
     #endif
 
-    _frameUpdater.start();
     QObject::connect(&_frameUpdater, &QTimer::timeout, this, &MainWindow::_onFrame);
 }
 
@@ -99,7 +98,8 @@ void MainWindow::_onFrame()
     }
 
     _detections.clear();
-    _frameMat = Util::cropTo1By1Mid(_frameMat);
+    _frameScene.clear();
+//    _frameMat = Util::cropTo1By1Mid(_frameMat);
 
     //FPS Count
     ++_frameCountTotal;
@@ -144,7 +144,7 @@ void MainWindow::_onFrame()
     _outputGraphicsView->setScene(&_frameScene);
     _outputGraphicsView->update();
     _outputGraphicsView->show();
-    _frameUpdater.start();
+//    _frameUpdater.start();
 }
 
 void MainWindow::_connectCamera()

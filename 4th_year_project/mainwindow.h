@@ -18,7 +18,7 @@
 #include <inference.h>
 #include <detectiongraphic.h>
 
-//#define FRAME_PRINT
+#define FRAME_PRINT
 #define FRAME_PRINT_EVERY_MS 5000
 
 #define CONNECTION_PRINT
@@ -72,7 +72,7 @@ private:
     String _cameraPath = "/dev/video2";
     String _cameraWindowName = "Live";
     int _apiRef = cv::CAP_V4L;
-    double _frameRate = 0;
+    double _frameRate = 30, _frameIntervalMs = 1000.0/_frameRate;
 
     VideoCapture _vCap;
     Mat _frameMat;
@@ -88,7 +88,7 @@ private:
     Inference _inf = Inference("/media/2TB_Crucial_SSD/misc/AI/project/models/first_batch/violet.onnx", cv::Size(INFERENCE_SIZE, INFERENCE_SIZE),
                                "/media/2TB_Crucial_SSD/misc/AI/project/models/first_batch/classes.txt", true);
 
-    bool _inferenceEnabled = true, _drawText = true, _drawOutline = true;
+    bool _inferenceEnabled = false, _drawText = true, _drawOutline = true;
 
     //Methods
     bool _test();
