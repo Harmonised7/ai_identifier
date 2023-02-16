@@ -116,7 +116,7 @@ void MainWindow::_onFrame()
     if(_inferenceEnabled)
     {
         //Run Inference
-        _frameMat = Util::cropTo1By1Mid(_frameMat);
+//        _frameMat = Util::cropTo1By1Mid(_frameMat);
         _runInference(_frameMat);
     }
 

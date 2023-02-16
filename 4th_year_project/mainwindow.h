@@ -72,7 +72,7 @@ private:
     String _cameraPath = "/dev/video2";
     String _cameraWindowName = "Live";
     int _apiRef = cv::CAP_V4L;
-    double _frameRate = 30, _frameIntervalMs = 1000.0/_frameRate;
+    double _frameRate = 28, _frameIntervalMs = 1000.0/_frameRate;
 
     VideoCapture _vCap;
     Mat _frameMat;
@@ -85,10 +85,11 @@ private:
 
 //    QMap<QString, QList<Detection>> *_detectionClassMap = new QMap<QString, QList<Detection>>;
 
-    Inference _inf = Inference("/media/2TB_Crucial_SSD/misc/AI/project/models/first_batch/violet.onnx", cv::Size(INFERENCE_SIZE, INFERENCE_SIZE),
-                               "/media/2TB_Crucial_SSD/misc/AI/project/models/first_batch/classes.txt", true);
+    QString _basePath = "/media/2TB_Crucial_SSD/misc/AI/project";
+    Inference _inf = Inference(_basePath + "/models/10_class/yolov8_15-02-23/best.onnx", cv::Size(1280, 704),
+                               _basePath + "/models/10_class/classes.txt", false);
 
-    bool _inferenceEnabled = false, _drawText = true, _drawOutline = true;
+    bool _inferenceEnabled = true, _drawText = true, _drawOutline = true;
 
     //Methods
     bool _test();

@@ -9,6 +9,9 @@
 
 // Cpp native
 #include <fstream>
+#include <vector>
+#include <string>
+#include <random>
 
 // OpenCV / DNN / Inference
 #include <opencv2/imgproc.hpp>
@@ -37,9 +40,9 @@ private:
     void loadClassesFromFile();
     void loadOnnxNetwork();
 
-    QString modelPath;
-    QString classesPath;
-    bool cudaEnabled;
+    QString modelPath{};
+    QString classesPath{};
+    bool cudaEnabled{};
 
     QVector<cv::Scalar> colors{};
     QVector<QString> classes{};
