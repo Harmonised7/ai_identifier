@@ -196,7 +196,8 @@ void MainWindow::_runInference(const Mat &inputMat)
     _detections = _inf.runInference(inputMat);
 
     const int detectionsCount = _detections.size();
-    qDebug() << "Detection count:" << detectionsCount;
+//    qDebug() << "Detection count:" << detectionsCount;
+    _appendInfoBox("Detection count: " + QString::number(detectionsCount) + "\n");
 
     for (int i = 0; i < detectionsCount; ++i)
     {
@@ -207,14 +208,14 @@ void MainWindow::_runInference(const Mat &inputMat)
 
     for(const QString &key : _detectionCountMap->keys())
     {
-        _appendInfoBox(key + " " + QString::number(_detectionCountMap->value(key)));
+        _appendInfoBox(key + ": " + QString::number(_detectionCountMap->value(key)));
     }
 
     _appendInfoBox();
 
     for(const Detection &detection : _detections)
     {
-        _appendInfoBox(QString::number(detection.confidence).mid(0, 4));
+        _appendInfoBox(QString::number(detection.confidence).mid(0, 4).append(" ").append(detection.className));
     }
 }
 
