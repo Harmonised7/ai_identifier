@@ -59,6 +59,14 @@ set_target_properties(4th_year_project PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+# CUDA_START
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda-11.4")
+find_package(CUDA 11.4 REQUIRED)
+
+set(CMAKE_CUDA_STANDARD 11)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+# CUDA_END
+
 #OPENCV_START
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
