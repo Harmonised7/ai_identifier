@@ -24,9 +24,11 @@ struct Detection
 {
     int class_id{0};
     QString className{};
+    QString extra{};
     float confidence{0.0};
     cv::Scalar color{};
     cv::Rect box{};
+    cv::Mat mat{};
 };
 
 class Inference

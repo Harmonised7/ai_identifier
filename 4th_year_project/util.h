@@ -35,6 +35,7 @@
 #include <opencv4/opencv2/videoio/registry.hpp>
 
 #include "config.h"
+#include "inference.h"
 
 using namespace cv;
 
@@ -312,6 +313,17 @@ public:
         //Save image
         image.save(name + "." + extension);
     }
+
+//    static QMap<QString, QList<Mat>> splitByClassName(Mat mat, QList<Detection> detections)
+//    {
+//        QMap<QString, QList<Mat>> detectionsMatsMap;
+//        for(auto detection : detections)
+//        {
+//            if(!detectionsMatsMap.contains(detection.className))
+//               detectionsMatsMap.insert(detection.className, QList<Mat>());
+//            detectionsMatsMap[detection.className].push_back(Mat(mat, detection.box));
+//        }
+//    }
 };
 
 #endif // UTIL_H

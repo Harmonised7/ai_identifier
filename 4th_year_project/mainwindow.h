@@ -40,7 +40,7 @@ public:
     ~MainWindow();
 
     void print(const QString &text = "");
-    void exportImage(QString name = "", const bool &verbose = true);
+    void exportImage(const bool &verbose = true);
     QString getFormattedDate();
 
 private slots:
@@ -82,6 +82,7 @@ private:
     QSharedPointer<QGraphicsView> _outputGraphicsView;
     QMap<QString, int> *_detectionCountMap = new QMap<QString, int>;
     QList<Detection> _detections;
+    QMap<QString, QList<Detection>> _detectionsByClass;
 
 //    QMap<QString, QList<Detection>> *_detectionClassMap = new QMap<QString, QList<Detection>>;
 

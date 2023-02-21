@@ -98,6 +98,7 @@ void MainWindow::_onFrame()
     }
 
     _detections.clear();
+    _detectionsByClass.clear();
     _frameScene.clear();
 //    _frameMat = Util::cropTo1By1Mid(_frameMat);
 
@@ -195,20 +196,23 @@ void MainWindow::_runInference(const Mat &inputMat)
     _detectionCountMap->clear();
     _detections = _inf.runInference(inputMat);
 
+
     const int detectionsCount = _detections.size();
-//    qDebug() << "Detection count:" << detectionsCount;
     _appendInfoBox("Detection count: " + QString::number(detectionsCount) + "\n");
 
-    for (int i = 0; i < detectionsCount; ++i)
+    for(auto detection : _detections)
     {
-        const Detection detection = _detections[i];
-        const QString className = detection.className;
-        Util::increment(_detectionCountMap, className);
+        //Retrieve each bounding box as a Mat
+        detection.mat = Mat(_frameMat, detection.box);
+        //Categorise each detection by class name
+        if(!_detectionsByClass.contains(detection.className))
+           _detectionsByClass.insert(detection.className, QList<Detection>());
+        _detectionsByClass[detection.className].push_back(detection);
     }
 
-    for(const QString &key : _detectionCountMap->keys())
+    for(const QString &key : _detectionsByClass.keys())
     {
-        _appendInfoBox(key + ": " + QString::number(_detectionCountMap->value(key)));
+        _appendInfoBox(key + ": " + QString::number(_detectionsByClass.value(key).length()));
     }
 
     _appendInfoBox();
@@ -225,33 +229,26 @@ void MainWindow::on_centerZoomButton_clicked()
     ui->verticalZoomPosSlider->setValue(SLIDER_RANGE*0.5);
 }
 
-void MainWindow::exportImage(QString name, const bool &verbose)
+void MainWindow::exportImage(const bool &verbose)
 {
     const QString date = Util::getFormattedDate();
     const QString dirPath = "./export/" + date;
-    if(name.length() == 0)
-        name = dirPath + "/" + date;
     QDir().mkpath(dirPath);
-    Util::exportSceneToFile(_frameScene, name + "_inf");
-    cv::imwrite(QString(name + ".png").toStdString(), _frameMat);
+    Util::exportSceneToFile(_frameScene, dirPath + "/" + "final");
+    cv::imwrite(QString(dirPath + "/" + "raw.png").toStdString(), _frameMat);
     if(verbose)
-        print(name + " exported");
+        print(dirPath + " exported");
 
-    QMap<QString, int> exportCount;
-
-    for(auto detection : _detections)
+    for(auto className : _detectionsByClass.keys())
     {
-        exportCount.insert(detection.className,
-                           exportCount.contains(detection.className) ?
-                               exportCount[detection.className] + 1 : 1);
-        name = dirPath + "/" + detection.className + "_" + QString::number(exportCount[detection.className]);
-        cv::Mat croppedMat(_frameMat, detection.box);
-        cv::imwrite(QString(name + ".png").toStdString(), croppedMat);
-    }
-
-    for(auto key : exportCount.keys())
-    {
-        _appendInfoBox("exported: " + key + QString::number(exportCount[key]));
+        const QList<Detection> detections = _detectionsByClass[className];
+        const int length = detections.length();
+        for(int i = 0; i < length; ++i)
+        {
+            const Detection detection = detections[i];
+            cv::imwrite(QString(dirPath + "/" + "crop_" + className + "_" + QString::number(i+1) + ".png").toStdString(), detection.mat);
+        }
+        print("    " + QString::number(length) + "x" + className);
     }
 }
 
