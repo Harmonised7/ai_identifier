@@ -314,16 +314,16 @@ public:
         image.save(name + "." + extension);
     }
 
-//    static QMap<QString, QList<Mat>> splitByClassName(Mat mat, QList<Detection> detections)
-//    {
-//        QMap<QString, QList<Mat>> detectionsMatsMap;
-//        for(auto detection : detections)
-//        {
-//            if(!detectionsMatsMap.contains(detection.className))
-//               detectionsMatsMap.insert(detection.className, QList<Mat>());
-//            detectionsMatsMap[detection.className].push_back(Mat(mat, detection.box));
-//        }
-//    }
+    static Rect boundedRect(const qreal &x, const qreal &y, const qreal &width, const qreal &height, const qreal minX = 0, const qreal minY = 0, const qreal maxX = CAMERA_WIDTH, const qreal maxY = CAMERA_HEIGHT)
+    {
+        return Rect
+                (
+                    max(x, minX),
+                    max(y, minY),
+                    min(maxX - x, width),
+                    min(maxY - y, height)
+                );
+    }
 };
 
 #endif // UTIL_H

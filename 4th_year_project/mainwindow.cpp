@@ -19,8 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     _cameraConnectionManager.setInterval(1000);
 
     _outputGraphicsView = QSharedPointer<QGraphicsView>(ui->outputGraphicView);
-//    _outputGraphicsView->setMinimumSize(CAMERA_WIDTH, CAMERA_WIDTH);
-//    _outputGraphicsView->setMaximumSize(CAMERA_WIDTH, CAMERA_WIDTH);
+    _outputGraphicsView->minimumSize().setWidth(CAMERA_WIDTH);
+    _outputGraphicsView->minimumSize().setHeight(CAMERA_HEIGHT);
+    _outputGraphicsView->size().setWidth(CAMERA_WIDTH);
+    _outputGraphicsView->size().setHeight(CAMERA_HEIGHT);
     _outputGraphicsView->setFrameShape(QFrame::NoFrame);
     _outputGraphicsView->setRenderHints(QPainter::Antialiasing | QPainter::LosslessImageRendering | QPainter::TextAntialiasing);
 
