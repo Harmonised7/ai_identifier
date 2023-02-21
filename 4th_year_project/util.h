@@ -22,6 +22,8 @@
 #include <QRandomGenerator>
 #include <QDateTime>
 #include <QTextEdit>
+#include <QGraphicsScene>
+#include <QPainter>
 
 #include<array>
 #include<functional>
@@ -274,10 +276,10 @@ public:
     }
 
     template<typename KEY, typename VAL>
-    static VAL computeIfAbsent(QMap<KEY, VAL> *map, const KEY key, std::function<VAL(void)> getter)
+    static VAL computeIfAbsent(QMap<KEY, VAL> *map, const KEY key, std::function<VAL(KEY)> getter)
     {
         if(!map->contains(key))
-            map->insert(getter());
+            map->insert(key, getter());
         return map->value(key);
     }
 
@@ -294,6 +296,21 @@ public:
     static QRect rectToQRect(cv::Rect rect)
     {
         return QRect(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    static void exportSceneToFile(QGraphicsScene &scene, QString name = getFormattedDate(), QString extension = "png")
+    {
+        if(name.length() == 0)
+            name = Util::getFormattedDate();
+
+        //Export the scene as an image
+        QImage image(scene.width(), scene.height(), QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        scene.render(&painter);
+
+        //Save image
+        image.save(name + "." + extension);
     }
 };
 

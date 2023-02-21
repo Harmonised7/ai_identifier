@@ -227,21 +227,32 @@ void MainWindow::on_centerZoomButton_clicked()
 
 void MainWindow::exportImage(QString name, const bool &verbose)
 {
+    const QString date = Util::getFormattedDate();
+    const QString dirPath = "./export/" + date;
     if(name.length() == 0)
-        name = Util::getFormattedDate() + ".png";
-
-    //Export the scene as an image
-    QImage image(_frameScene.width(), _frameScene.height(), QImage::Format_ARGB32);
-    image.fill(Qt::transparent);
-    QPainter painter(&image);
-    _frameScene.render(&painter);
-
-    //Save image
-    image.save(name);
-
-//    imwrite(name.toStdString(), _frameMat);
+        name = dirPath + "/" + date;
+    QDir().mkpath(dirPath);
+    Util::exportSceneToFile(_frameScene, name + "_inf");
+    cv::imwrite(QString(name + ".png").toStdString(), _frameMat);
     if(verbose)
         print(name + " exported");
+
+    QMap<QString, int> exportCount;
+
+    for(auto detection : _detections)
+    {
+        exportCount.insert(detection.className,
+                           exportCount.contains(detection.className) ?
+                               exportCount[detection.className] + 1 : 1);
+        name = dirPath + "/" + detection.className + "_" + QString::number(exportCount[detection.className]);
+        cv::Mat croppedMat(_frameMat, detection.box);
+        cv::imwrite(QString(name + ".png").toStdString(), croppedMat);
+    }
+
+    for(auto key : exportCount.keys())
+    {
+        _appendInfoBox("exported: " + key + QString::number(exportCount[key]));
+    }
 }
 
 void MainWindow::on_actionExport_Image_triggered()
