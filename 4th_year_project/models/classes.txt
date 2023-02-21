@@ -1,0 +1,10 @@
+red_led
+green_led
+blue_led
+yellow_led
+ac_capacitor
+dc_capacitor
+resistor
+sip_resistor
+pcb_terminal
+metal_nut

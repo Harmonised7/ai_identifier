@@ -2,6 +2,7 @@
 #define DETECTIONGRAPHIC_H
 
 #include <QGraphicsItem>
+#include <QtMath>
 #include <inference.h>
 
 class DetectionGraphic : public QGraphicsItem
@@ -9,13 +10,13 @@ class DetectionGraphic : public QGraphicsItem
 public:
     DetectionGraphic(Detection detection);
 
-private:
-    Detection _detection;
-
     // QGraphicsItem interface
-public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
+    Detection _detection;
+    const qreal _fontSize = 40;
 };
 
 #endif // DETECTIONGRAPHIC_H

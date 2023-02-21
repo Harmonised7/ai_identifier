@@ -264,7 +264,6 @@ void MainWindow::on_actionViewText_triggered(bool checked)
     _drawText = checked;
 }
 
-
 void MainWindow::on_actionViewOutline_triggered(bool checked)
 {
     _drawOutline = checked;
