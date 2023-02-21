@@ -141,8 +141,8 @@ QVector<Detection> Inference::runInference(const cv::Mat &input)
         result.class_id = class_ids[idx];
         result.confidence = confidences[idx];
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
+//        std::random_device rd;
+        std::mt19937 gen(result.class_id);
         std::uniform_int_distribution<int> dis(100, 255);
         result.color = cv::Scalar(dis(gen),
                                   dis(gen),
