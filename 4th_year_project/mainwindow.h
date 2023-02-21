@@ -85,9 +85,9 @@ private:
 
 //    QMap<QString, QList<Detection>> *_detectionClassMap = new QMap<QString, QList<Detection>>;
 
-    QString _basePath = "/media/2TB_Crucial_SSD/misc/AI/project";
-    Inference _inf = Inference(_basePath + "/models/10_class/yolov8_15-02-23/best.onnx", cv::Size(1280, 704),
-                               _basePath + "/models/10_class/classes.txt", false);
+    QString _basePath = "/media/2TB_Crucial_SSD/repos/ai_identifier/4th_year_project";
+    Inference _inf = Inference(_basePath + "/models/YOLOv5/best.onnx", cv::Size(1280, 704),
+                               _basePath + "/models/YOLOv5/classes.txt", true);
 
     bool _inferenceEnabled = true, _drawText = true, _drawOutline = true;
 
