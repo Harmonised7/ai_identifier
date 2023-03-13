@@ -63,6 +63,8 @@ public:
     static inline const QString WHITE = "white";
     static inline const QString GOLD = "gold";
 
+    static inline const QString RESISTOR = "resistor";
+
     static QMap<QString, int> makeResistorColorCodesMap()
     {
         QMap<QString, int> map;
@@ -631,6 +633,22 @@ public:
         return "unknown";
     }
 
+    static QList<QString> identifyBandColors(QList<QColor> bands)
+    {
+
+        QList<QString> stringCodedBands;
+        if(bands.length() == 0)
+            return stringCodedBands;
+        for(const QColor color : bands)
+        {
+            stringCodedBands.push_back(identifyBandColor(color));
+        }
+        //We're looking at the resistor backwards
+        if(stringCodedBands[0] == GOLD)
+            stringCodedBands = reverse(stringCodedBands);
+        return stringCodedBands;
+    }
+
     static int decodeBand(QColor bandColor)
     {
         return decodeBand(identifyBandColor(bandColor));
@@ -641,17 +659,12 @@ public:
         return RESISTOR_COLOR_CODES[bandColor];
     }
 
-    static qreal decodeBands(QList<QColor> bands)
+    static qreal decodeResistorBands(QList<QColor> bands)
     {
-        QList<QString> stringCodedBands;
-        for(const QColor color : bands)
-        {
-            stringCodedBands.push_back(identifyBandColor(color));
-        }
-        return decodeBands(stringCodedBands);
+        return decodeResistorBands(identifyBandColors(bands));
     }
 
-    static qreal decodeBands(QList<QString> bands)
+    static qreal decodeResistorBands(QList<QString> bands)
     {
         int ohms = 0;
         const int length = bands.length();
@@ -928,9 +941,9 @@ public:
 
             rectangle(inputMat, Rect(0, y1-1, imageWidth, 2), Util::BEST_SCALAR, 2);
             rectangle(inputMat, Rect(0, y2-1, imageWidth, 2), Util::BEST_SCALAR, 2);
-        }
 
-        Util::betterShow(inputMat, displayName, 3);
+            Util::betterShow(inputMat, displayName, 3);
+        }
         return ohmBands;
     }
 
@@ -1055,12 +1068,12 @@ public:
     static Rect boundedRect(const qreal &x, const qreal &y, const qreal &width, const qreal &height, const qreal minX = 0, const qreal minY = 0, const qreal maxX = CAMERA_WIDTH, const qreal maxY = CAMERA_HEIGHT)
     {
         return Rect
-                (
-                    max(x, minX),
-                    max(y, minY),
-                    min(maxX - x, width),
-                    min(maxY - y, height)
-                );
+            (
+                max(x, minX),
+                max(y, minY),
+                min(maxX - x, width),
+                min(maxY - y, height)
+            );
     }
 };
 

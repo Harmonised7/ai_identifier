@@ -196,19 +196,19 @@ void MainWindow::_printFramerate()
 void MainWindow::_runInference(const Mat &inputMat)
 {
     _detectionCountMap->clear();
-    _detections = _inf.runInference(inputMat);
-
+    for(Detection detection : _inf.runInference(inputMat))
+    {
+        _detections.push_back(detection);
+    }
 
     const int detectionsCount = _detections.size();
     _appendInfoBox("Detection count: " + QString::number(detectionsCount) + "\n");
 
-    for(auto detection : _detections)
+    for(Detection detection : _detections)
     {
-        //Retrieve each bounding box as a Mat
-        detection.mat = Mat(_frameMat, detection.box);
         //Categorise each detection by class name
         if(!_detectionsByClass.contains(detection.className))
-           _detectionsByClass.insert(detection.className, QList<Detection>());
+            _detectionsByClass.insert(detection.className, {});
         _detectionsByClass[detection.className].push_back(detection);
     }
 
@@ -219,7 +219,7 @@ void MainWindow::_runInference(const Mat &inputMat)
 
     _appendInfoBox();
 
-    for(const Detection &detection : _detections)
+    for(const auto detection : _detections)
     {
         _appendInfoBox(QString::number(detection.confidence).mid(0, 4).append(" ").append(detection.className));
     }
@@ -247,7 +247,7 @@ void MainWindow::exportImage(const bool &verbose)
         const int length = detections.length();
         for(int i = 0; i < length; ++i)
         {
-            const Detection detection = detections[i];
+            Detection detection = detections[i];
             cv::imwrite(QString(dirPath + "/" + "crop_" + className + "_" + QString::number(i+1) + ".png").toStdString(), detection.mat);
         }
         print("    " + QString::number(length) + "x" + className);

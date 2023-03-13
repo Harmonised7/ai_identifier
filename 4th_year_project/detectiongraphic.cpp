@@ -33,6 +33,7 @@ void DetectionGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     font.setPointSizeF(_fontSize);
     painter->setFont(font);
     QString text = _detection.className + " " + QString::number(_detection.confidence).mid(0, 4) + " " + _detection.extra;
+
     pen.setWidth(10);
     const qreal halfBoundWidth = bound.width()/2.0;
     //result of mapping 0 to CAMERA_WIDTH range, to 0 to 1 range.

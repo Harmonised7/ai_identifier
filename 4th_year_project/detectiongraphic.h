@@ -15,7 +15,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
-    Detection _detection;
+    struct Detection _detection;
     const qreal _fontSize = 40;
 };
 

@@ -138,19 +138,34 @@ QVector<Detection> Inference::runInference(const cv::Mat &input)
         int idx = nms_result[i];
 
         Detection result;
-        result.class_id = class_ids[idx];
+        result.classId = class_ids[idx];
+        result.className = classes[result.classId];
         result.confidence = confidences[idx];
 
-//        std::random_device rd;
-        std::mt19937 gen(result.class_id);
+        // std::random_device rd;
+        std::mt19937 gen(result.classId);
         std::uniform_int_distribution<int> dis(100, 255);
         result.color = cv::Scalar(dis(gen),
                                   dis(gen),
                                   dis(gen));
-
-        result.className = classes[result.class_id];
         result.box = boxes[idx];
+        result.mat = Mat(input, result.box);
 
+        if(result.className == Util::RESISTOR)
+        {
+            Mat preparedMat = Util::prepareResistorMat(result.mat);
+            const QList<QColor> bandColors = Util::getOhmBands(preparedMat);
+            const QList<QString> bands = Util::identifyBandColors(bandColors);
+            const qreal ohmValue = Util::decodeResistorBands(bands);
+            if(ohmValue > 0)
+            {
+                result.extra += QString::number(ohmValue) + " Ohms";
+    //            for(const QString band : bands)
+    //            {
+    //                result.extra += " " + band;
+    //            }
+            }
+        }
         detections.push_back(result);
     }
 

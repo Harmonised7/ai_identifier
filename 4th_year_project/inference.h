@@ -22,7 +22,7 @@
 
 struct Detection
 {
-    int class_id{0};
+    int classId{0};
     QString className{};
     QString extra{};
     float confidence{0.0};
