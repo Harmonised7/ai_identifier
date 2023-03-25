@@ -153,7 +153,7 @@ QVector<Detection> Inference::runInference(const cv::Mat &input)
 
         if(result.className == Util::RESISTOR)
         {
-            Mat preparedMat = Util::prepareResistorMat(result.mat);
+            Mat preparedMat = Util::prepareMatForProcessing(result.mat, 90);
             const QList<QColor> bandColors = Util::getOhmBands(preparedMat);
             const QList<QString> bands = Util::identifyBandColors(bandColors);
             const qreal ohmValue = Util::decodeResistorBands(bands);
@@ -165,6 +165,12 @@ QVector<Detection> Inference::runInference(const cv::Mat &input)
     //                result.extra += " " + band;
     //            }
             }
+        }
+        else if(result.className == Util::DC_CAPACITOR)
+        {
+            Mat prepared = Util::prepareMatForProcessing(result.mat);
+            result.extra = Util::performOCR(prepared);
+            Util::betterShow(prepared, (QString) "capacitor");
         }
         detections.push_back(result);
     }

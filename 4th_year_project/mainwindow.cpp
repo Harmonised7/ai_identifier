@@ -221,7 +221,7 @@ void MainWindow::_runInference(const Mat &inputMat)
 
     for(const auto detection : _detections)
     {
-        _appendInfoBox(QString::number(detection.confidence).mid(0, 4).append(" ").append(detection.className));
+        _appendInfoBox(QString::number(detection.confidence).mid(0, 4) + " " + detection.className + " " + detection.extra);
     }
 }
 

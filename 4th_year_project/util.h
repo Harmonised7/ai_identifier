@@ -29,6 +29,7 @@
 #include<functional>
 
 #include <opencv4/opencv2/core.hpp>
+#include <opencv4/opencv2/text.hpp>
 #include <opencv4/opencv2/imgproc.hpp>
 #include <opencv4/opencv2/videoio.hpp>
 #include <opencv4/opencv2/highgui.hpp>
@@ -39,6 +40,7 @@
 
 using namespace std;
 using namespace cv;
+using namespace cv::text;
 
 class Util
 {
@@ -64,6 +66,7 @@ public:
     static inline const QString GOLD = "gold";
 
     static inline const QString RESISTOR = "resistor";
+    static inline const QString DC_CAPACITOR = "dc_capacitor";
 
     static QMap<QString, int> makeResistorColorCodesMap()
     {
@@ -947,7 +950,7 @@ public:
         return ohmBands;
     }
 
-    static Mat prepareResistorMat(Mat inputMat, const bool display = false)
+    static Mat prepareMatForProcessing(Mat inputMat, const qreal degsOffset = 0, const bool display = false)
     {
         Util::adjustSaturationTo(inputMat, 0.1, 100);
         const Size imageSize = inputMat.size();
@@ -959,8 +962,8 @@ public:
 
         QPointF midPos = QPointF(midX, midY);
 
-        const double lowestDimension = min(imageWidth, imageHeight);
-        const double highestDimension = max(imageWidth, imageHeight);
+//        const double lowestDimension = min(imageWidth, imageHeight);
+//        const double highestDimension = max(imageWidth, imageHeight);
 
         const QPointF origin = QPointF(0, 0);
 
@@ -997,7 +1000,7 @@ public:
 
         //Rotation
         const cv::Point2f centerPoint(midX, midY);
-        const double finalDegs = Util::toDegs(orientation) + 90;
+        const double finalDegs = Util::toDegs(orientation) + degsOffset;
         const Rect2f boundingBox = cv::RotatedRect(cv::Point2f(), imageSize, finalDegs).boundingRect2f();
         cv::Mat rotMat = cv::getRotationMatrix2D(centerPoint, finalDegs, 1.0);
         rotMat.at<double>(0,2) += boundingBox.width/2.0 - imageWidth/2.0;
@@ -1074,6 +1077,75 @@ public:
                 min(maxX - x, width),
                 min(maxY - y, height)
             );
+    }
+
+//    static QString performOCR(Mat input)
+//    {
+//        // Convert input to grayscale
+//        Mat gray;
+//        cvtColor(input, gray, COLOR_BGR2GRAY);
+
+//        // Create MSER object
+//        Ptr<MSER> mser = MSER::create();
+
+//        // Detect regions of interest using MSER
+//        vector<vector<Point>> contours;
+//        vector<Rect> rois;
+//        mser->detectRegions(gray, contours, rois);
+
+//        // Create OCR object
+//        Ptr<OCRTesseract> ocr = OCRTesseract::create();
+
+//        string output;
+//        for (int i = 0; i < rois.size(); i++) {
+//            // Extract current region of interest
+//            Mat roi = gray(rois[i]);
+
+//            // Recognize text in current region using OCR
+//            string text;
+//            ocr->run(roi, text);
+
+//            // Append recognized text to output string
+//            output += text;
+//        }
+
+//        return QString::fromStdString(output);
+//    }
+
+    static QString performOCR(Mat input)
+    {
+        // Convert input to grayscale
+        Mat gray;
+        cvtColor(input, gray, COLOR_BGR2GRAY);
+
+        // Create MSER object
+        Ptr<MSER> mser = MSER::create();
+
+        // Detect regions of interest using MSER
+        vector<vector<Point>> contours;
+        vector<Rect> rois;
+        mser->detectRegions(gray, contours, rois);
+
+        // Create OCR object
+        Ptr<OCRTesseract> ocr = OCRTesseract::create();
+
+        string output;
+        for (int i = 0; i < rois.size(); i++) {
+            // Extract current region of interest
+            Mat roi = gray(rois[i]);
+
+            // Recognize text in current region using OCR
+            string text;
+            vector<Rect> rects;
+            vector<float> confidences;
+            vector<string> words;
+            ocr->run(roi, text, &rects, &words, &confidences);
+
+            // Append recognized text to output string
+            output += text;
+        }
+
+        return QString::fromStdString(output);
     }
 };
 
